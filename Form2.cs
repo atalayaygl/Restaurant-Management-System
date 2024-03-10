@@ -14,6 +14,7 @@ namespace WindowsFormsApp3
 {
     public partial class Form2 : Form
     {
+        //sql baglantisi icin sadece string'i degistirin!!!!
         string sqlBaglantisi = "Data Source=LAPLACE;Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
         
         public Form2()
