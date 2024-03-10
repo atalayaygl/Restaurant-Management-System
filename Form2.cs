@@ -14,11 +14,11 @@ namespace WindowsFormsApp3
 {
     public partial class Form2 : Form
     {
-        //sql baglantisi icin sadece string'i degistirin!!!!
-        string sqlBaglantisi = "Data Source=LAPLACE;Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        
+        string bilgisayarAdi= Environment.MachineName;
+        string sqlBaglantisi;
         public Form2()
         {
+            sqlBaglantisi = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             InitializeComponent();
         }
 
@@ -64,13 +64,20 @@ namespace WindowsFormsApp3
                 cmd.Parameters.AddWithValue("@HalfPrice", float.Parse(HalfPrice.Text));
                 cmd.Parameters.AddWithValue("@FullPrice", float.Parse(FullPrice.Text));
                 cmd.Parameters.AddWithValue("@FoodCategory", FoodCategory.SelectedItem);
+                if(FoodCategory.SelectedItem == null || FoodName.Text == null)
+                {
+                    throw new Exception("Kategori ve İsim Boş Bırakılamaz!!");
+
+                }
+                
                 cmd.ExecuteNonQuery();
                 con.Close();
                 MessageBox.Show("Successfully Saved!");
             }
             catch (Exception err)
             {
-                MessageBox.Show(" "+err);
+                Console.WriteLine(err.ToString());
+                MessageBox.Show(" ");
             }
             RefreshListBox();
 
@@ -85,6 +92,7 @@ namespace WindowsFormsApp3
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+           
             if (listBox1.SelectedItem != null)
             {
                 string veri = listBox1.SelectedItem.ToString();
@@ -115,10 +123,10 @@ namespace WindowsFormsApp3
                 string yemekAdi = veri.Substring(0, ilkSayiIndex).Trim();
 
                 // Yarım fiyat ve tam fiyatı al
-                string fiyatlar = veri.Substring(ilkSayiIndex, sonSayiIndex - ilkSayiIndex).Trim();
+                string fiyatlar = veri.Substring(ilkSayiIndex, sonSayiIndex - ilkSayiIndex+1).Trim();
                 string[] fiyatParcalar = fiyatlar.Split(' ');
                 string yarimFiyat = fiyatParcalar[0];
-                string tamFiyat = fiyatParcalar[1];
+                string tamFiyat = 1.ToString(); //fiyatParcalar[1];
                 string kategori = veri.Substring(sonSayiIndex + 1).Trim();
                
                 
@@ -186,6 +194,7 @@ namespace WindowsFormsApp3
             }
             catch(Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 MessageBox.Show("Yemeğin ismi değiştirilemez, silip yeniden ekleyin. Tamsayı değerler giriniz.");
             }
             RefreshListBox();
@@ -209,6 +218,7 @@ namespace WindowsFormsApp3
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 MessageBox.Show("Boyle bir yemek yok!");
             }
             RefreshListBox();
@@ -297,7 +307,7 @@ namespace WindowsFormsApp3
             HalfPrice.Text = "";
             FullPrice.Text = "";
             FoodCategory.SelectedItem = null;
-            
+
         }
     }
 }

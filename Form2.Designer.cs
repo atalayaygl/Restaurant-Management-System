@@ -155,7 +155,8 @@
             this.listBox1.Location = new System.Drawing.Point(333, 40);
             this.listBox1.MultiColumn = true;
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(495, 228);
+            this.listBox1.ScrollAlwaysVisible = true;
+            this.listBox1.Size = new System.Drawing.Size(495, 244);
             this.listBox1.Sorted = true;
             this.listBox1.TabIndex = 11;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
@@ -213,7 +214,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(995, 394);
+            this.ClientSize = new System.Drawing.Size(889, 332);
             this.Controls.Add(this.clearInputs);
             this.Controls.Add(this.search);
             this.Controls.Add(this.searchString);
