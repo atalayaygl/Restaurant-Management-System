@@ -40,14 +40,11 @@
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.update = new System.Windows.Forms.Button();
             this.delete = new System.Windows.Forms.Button();
-            this.searchString = new System.Windows.Forms.TextBox();
-            this.search = new System.Windows.Forms.Button();
-            this.clearInputs = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // FoodName
             // 
-            this.FoodName.Location = new System.Drawing.Point(129, 21);
+            this.FoodName.Location = new System.Drawing.Point(145, 55);
             this.FoodName.Margin = new System.Windows.Forms.Padding(4);
             this.FoodName.Name = "FoodName";
             this.FoodName.Size = new System.Drawing.Size(160, 22);
@@ -56,7 +53,7 @@
             // 
             // FullPrice
             // 
-            this.FullPrice.Location = new System.Drawing.Point(129, 123);
+            this.FullPrice.Location = new System.Drawing.Point(145, 157);
             this.FullPrice.Margin = new System.Windows.Forms.Padding(4);
             this.FullPrice.Name = "FullPrice";
             this.FullPrice.Size = new System.Drawing.Size(160, 22);
@@ -65,7 +62,7 @@
             // 
             // HalfPrice
             // 
-            this.HalfPrice.Location = new System.Drawing.Point(129, 75);
+            this.HalfPrice.Location = new System.Drawing.Point(145, 109);
             this.HalfPrice.Margin = new System.Windows.Forms.Padding(4);
             this.HalfPrice.Name = "HalfPrice";
             this.HalfPrice.Size = new System.Drawing.Size(160, 22);
@@ -75,7 +72,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(34, 25);
+            this.label1.Location = new System.Drawing.Point(50, 59);
             this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(87, 16);
@@ -86,7 +83,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(41, 129);
+            this.label2.Location = new System.Drawing.Point(57, 163);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(70, 16);
@@ -97,7 +94,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(34, 78);
+            this.label3.Location = new System.Drawing.Point(50, 112);
             this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(77, 16);
@@ -106,7 +103,6 @@
             // 
             // FoodCategory
             // 
-            this.FoodCategory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.FoodCategory.FormattingEnabled = true;
             this.FoodCategory.Items.AddRange(new object[] {
             "Et Yemekleri",
@@ -118,7 +114,7 @@
             "Çorbalar",
             "Tatlı",
             "İçecek"});
-            this.FoodCategory.Location = new System.Drawing.Point(129, 181);
+            this.FoodCategory.Location = new System.Drawing.Point(145, 215);
             this.FoodCategory.Margin = new System.Windows.Forms.Padding(4);
             this.FoodCategory.Name = "FoodCategory";
             this.FoodCategory.Size = new System.Drawing.Size(160, 24);
@@ -128,7 +124,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(34, 185);
+            this.label4.Location = new System.Drawing.Point(50, 219);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(67, 16);
@@ -137,7 +133,7 @@
             // 
             // save
             // 
-            this.save.Location = new System.Drawing.Point(189, 222);
+            this.save.Location = new System.Drawing.Point(240, 274);
             this.save.Margin = new System.Windows.Forms.Padding(4);
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(100, 28);
@@ -152,17 +148,17 @@
             this.listBox1.ColumnWidth = 20;
             this.listBox1.FormattingEnabled = true;
             this.listBox1.ItemHeight = 16;
-            this.listBox1.Location = new System.Drawing.Point(333, 40);
+            this.listBox1.Location = new System.Drawing.Point(352, 58);
             this.listBox1.MultiColumn = true;
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(495, 228);
+            this.listBox1.Size = new System.Drawing.Size(495, 244);
             this.listBox1.Sorted = true;
             this.listBox1.TabIndex = 11;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // update
             // 
-            this.update.Location = new System.Drawing.Point(65, 257);
+            this.update.Location = new System.Drawing.Point(133, 274);
             this.update.Name = "update";
             this.update.Size = new System.Drawing.Size(100, 28);
             this.update.TabIndex = 12;
@@ -172,51 +168,19 @@
             // 
             // delete
             // 
-            this.delete.BackColor = System.Drawing.Color.Red;
-            this.delete.ForeColor = System.Drawing.SystemColors.ButtonFace;
-            this.delete.Location = new System.Drawing.Point(65, 222);
+            this.delete.Location = new System.Drawing.Point(28, 274);
             this.delete.Name = "delete";
             this.delete.Size = new System.Drawing.Size(99, 28);
             this.delete.TabIndex = 13;
             this.delete.Text = "Sil";
-            this.delete.UseVisualStyleBackColor = false;
+            this.delete.UseVisualStyleBackColor = true;
             this.delete.Click += new System.EventHandler(this.delete_Click);
-            // 
-            // searchString
-            // 
-            this.searchString.Location = new System.Drawing.Point(728, 12);
-            this.searchString.Name = "searchString";
-            this.searchString.Size = new System.Drawing.Size(100, 22);
-            this.searchString.TabIndex = 14;
-            // 
-            // search
-            // 
-            this.search.Location = new System.Drawing.Point(647, 11);
-            this.search.Name = "search";
-            this.search.Size = new System.Drawing.Size(75, 23);
-            this.search.TabIndex = 15;
-            this.search.Text = "Ara";
-            this.search.UseVisualStyleBackColor = true;
-            this.search.Click += new System.EventHandler(this.search_Click);
-            // 
-            // clearInputs
-            // 
-            this.clearInputs.Location = new System.Drawing.Point(189, 257);
-            this.clearInputs.Name = "clearInputs";
-            this.clearInputs.Size = new System.Drawing.Size(100, 28);
-            this.clearInputs.TabIndex = 16;
-            this.clearInputs.Text = "Temizle";
-            this.clearInputs.UseVisualStyleBackColor = true;
-            this.clearInputs.Click += new System.EventHandler(this.clearInputs_Click);
             // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(995, 394);
-            this.Controls.Add(this.clearInputs);
-            this.Controls.Add(this.search);
-            this.Controls.Add(this.searchString);
+            this.ClientSize = new System.Drawing.Size(987, 363);
             this.Controls.Add(this.delete);
             this.Controls.Add(this.update);
             this.Controls.Add(this.listBox1);
@@ -252,8 +216,5 @@
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button update;
         private System.Windows.Forms.Button delete;
-        private System.Windows.Forms.TextBox searchString;
-        private System.Windows.Forms.Button search;
-        private System.Windows.Forms.Button clearInputs;
     }
 }
