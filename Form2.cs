@@ -64,13 +64,19 @@ namespace WindowsFormsApp3
                 cmd.Parameters.AddWithValue("@HalfPrice", float.Parse(HalfPrice.Text));
                 cmd.Parameters.AddWithValue("@FullPrice", float.Parse(FullPrice.Text));
                 cmd.Parameters.AddWithValue("@FoodCategory", FoodCategory.SelectedItem);
+                if(FoodCategory.SelectedItem == null || FoodName.Text == null)
+                {
+                    throw new Exception("Kategori ve İsim Boş Bırakılamaz!!");
+
+                }
+                
                 cmd.ExecuteNonQuery();
                 con.Close();
                 MessageBox.Show("Successfully Saved!");
             }
             catch (Exception err)
             {
-                MessageBox.Show(" "+err);
+                MessageBox.Show(" ");
             }
             RefreshListBox();
 
@@ -115,7 +121,7 @@ namespace WindowsFormsApp3
                 string yemekAdi = veri.Substring(0, ilkSayiIndex).Trim();
 
                 // Yarım fiyat ve tam fiyatı al
-                string fiyatlar = veri.Substring(ilkSayiIndex, sonSayiIndex - ilkSayiIndex).Trim();
+                string fiyatlar = veri.Substring(ilkSayiIndex, sonSayiIndex - ilkSayiIndex+1).Trim();
                 string[] fiyatParcalar = fiyatlar.Split(' ');
                 string yarimFiyat = fiyatParcalar[0];
                 string tamFiyat = fiyatParcalar[1];
