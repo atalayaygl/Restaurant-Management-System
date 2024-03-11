@@ -22,5 +22,10 @@ namespace WindowsFormsApp3
             Form2 yeniForm = new Form2();
             yeniForm.Show();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }
