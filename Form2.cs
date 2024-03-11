@@ -126,7 +126,7 @@ namespace WindowsFormsApp3
                 string fiyatlar = veri.Substring(ilkSayiIndex, sonSayiIndex - ilkSayiIndex+1).Trim();
                 string[] fiyatParcalar = fiyatlar.Split(' ');
                 string yarimFiyat = fiyatParcalar[0];
-                string tamFiyat = 1.ToString(); //fiyatParcalar[1];
+                string tamFiyat = fiyatParcalar[1]; //fiyatParcalar[1];
                 string kategori = veri.Substring(sonSayiIndex + 1).Trim();
                
                 
