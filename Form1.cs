@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,49 @@ namespace WindowsFormsApp3
         public Form1()
         {
             InitializeComponent();
+        }
+
+
+        //Muslugu taktim, kategoriler bu fonksiyon ile cagirilacak
+        public static String[] GetCategorysArray()
+        {
+            //sql baglantisi kuruldu
+            string bilgisayarAdi = Environment.MachineName;
+            string sqlBaglantisi = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            //kategori isimleri cekilmesi icin sql komutu set edildi
+            string query = "SELECT DISTINCT FoodCategory FROM DbFood.dbo.FoodMenu";
+
+            //kategori isimlerini tutacak string tanimi
+            List<string> categories = new List<string>();
+
+            //sorgu operasyonu basladi
+            using (SqlConnection conn = new SqlConnection(sqlBaglantisi))
+            {
+                SqlCommand sqlCommand = new SqlCommand(query, conn);
+                try
+                {
+                    conn.Open();
+                    SqlDataReader reader = sqlCommand.ExecuteReader();
+
+                    //Kategori isimlerini oku
+                    while (reader.Read())
+                    {
+                        string category = reader["FoodCategory"].ToString();
+                        categories.Add(category);
+                    }
+
+                    reader.Close();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+
+                }
+            }
+
+            //kategoriler geri donduruldu
+            return categories.ToArray();
         }
 
         private void button1_Click(object sender, EventArgs e)
