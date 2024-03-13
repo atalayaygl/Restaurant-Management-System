@@ -18,7 +18,8 @@ namespace WindowsFormsApp3
         string sqlBaglantisi;
         public Form2()
         {
-            sqlBaglantisi = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
+            sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             InitializeComponent();
         }
 

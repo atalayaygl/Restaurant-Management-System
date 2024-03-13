@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Security.AccessControl;
@@ -16,7 +17,7 @@ namespace WindowsFormsApp3
     {
         
         // Diğer özellikler
-        public bool isFull { get; set; }
+        public bool Selected { get; set; }
         public string FoodName { get; set; }
         public float HalfPrice { get; set; }
         public float FullPrice { get; set; }
@@ -33,18 +34,14 @@ namespace WindowsFormsApp3
         }
 
         // Güncellenmiş kurucu metod
-        public CustomButton(string foodName, float halfPrice, float fullPrice, string category, int adet=1, bool isFull=true)
+        public CustomButton(string foodName, float halfPrice, float fullPrice, string category, int adet=1)
         {
             // Değerleri özelliklere atama
-            this.isFull = isFull;
             FoodName = foodName;
             HalfPrice = halfPrice;
             FullPrice = fullPrice;
             Category = category;
             Adet = 1;
-
-            // Tüm yemekler tam olarak atanır
-            this.isFull = true;
 
             this.Width = 100;
             this.Height = 50;
@@ -55,9 +52,10 @@ namespace WindowsFormsApp3
         protected override void OnClick(EventArgs e)
         {
             base.OnClick(e);
-            isFull = true;
-            Console.WriteLine($"FoodName: {FoodName}  Tam Fiyat: {FullPrice}  Tam mı ?:{isFull} Kategorisi ne :{Category}");
-            AddInfoToListBox();
+            this.BackColor = Color.Red;
+            Selected = true;
+            Console.WriteLine($"FoodName: {FoodName}  Tam Fiyat: {FullPrice}  Tam mı ?:{Selected} Kategorisi ne :{Category}");
+          
 
             if (CustomClick != null)
                 CustomClick(this, e);
@@ -72,7 +70,7 @@ namespace WindowsFormsApp3
                 return;
 
             // Bilgileri sağ tarafa ekleyen fonksiyonu çağır
-            newButton.AddInfoToRightPanel(FoodName, Adet, FullPrice,isFull);
+            newButton.AddInfoToRightPanel(FoodName, Adet, FullPrice,Selected);
         }
 
     }
@@ -80,49 +78,211 @@ namespace WindowsFormsApp3
 
     public partial class NewMain : Form
     {
+
         private TextBox totalAmountTextBox;
+        private Label buttonsLabel;
 
-        private ListBox infoListBox;
-        CustomButton[] allButtons;
 
-        public string[] categories = { "Tümü","Çorba Çeşitleri", "Sebze Çeşitleri", "Bakliyat Yemekleri","Ciğer Yemekleri","Kıymalı Yemekler","Pilav Makarna Çeşitleri",
-            "Meze Çeşitleri","Tatlı Çeşitleri","Et Yemekleri","Tavuk Çeşitleri","Köfte Çeşitleri","İçecek Çeşitleri" };
+        private FlowLayoutPanel leftFlowLayout;
+        private FlowLayoutPanel rightFlowLayout;
+        private FlowLayoutPanel bottomFlowLayout;
+
+        private float leftPercentage = 0.5f;
+        private float rightPercentage = 0.5f; 
+                                             
+        private ListBox billListBox;
+        //CustomButton[] allButtons;
+        private List<CustomButton> allButtons = new List<CustomButton>();
+
+        //public string[] categories = Form1.GetCategorysArray();
         public NewMain()
         {
             InitializeComponent();
         }
 
+        private void InitializeLayouts()
+        {
+            ///////////////////////////////sol taraf
+            leftFlowLayout = new FlowLayoutPanel();
+            leftFlowLayout.Dock = DockStyle.Left;
+            leftFlowLayout.Width = (int)(Width * leftPercentage);
+            leftFlowLayout.FlowDirection = FlowDirection.TopDown;
+            leftFlowLayout.BackColor = Color.LightBlue; // Sol tarafın arka plan rengi
+
+            buttonsLabel=new Label();
+            buttonsLabel.Text = "Tümü";
+            buttonsLabel.Dock = DockStyle.Left;
+            buttonsLabel.Font= new System.Drawing.Font("Arial Rounded MT Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            buttonsLabel.AutoSize= true;
+            buttonsLabel.TabIndex=3;
+            leftFlowLayout.Controls.Add(buttonsLabel);
+
+            /////////////////////////////////////////sağ taraf
+            rightFlowLayout = new FlowLayoutPanel();
+            rightFlowLayout.Dock = DockStyle.Right;
+            rightFlowLayout.Width = (int)(Width * rightPercentage);
+            rightFlowLayout.FlowDirection = FlowDirection.LeftToRight;
+            rightFlowLayout.BackColor = Color.LightGreen; // Sağ tarafın arka plan rengi
+
+
+            Label catagoryLabel = new Label();
+            catagoryLabel.Text = "Kategoriler";
+            catagoryLabel.Dock = DockStyle.Left;
+            catagoryLabel.Font = new System.Drawing.Font("Arial Rounded MT Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            catagoryLabel.AutoSize = true;
+            catagoryLabel.TabIndex = 3;
+            rightFlowLayout.Controls.Add(catagoryLabel);
+
+
+
+            ///////////////////////////Alt taraff
+
+
+            bottomFlowLayout = new FlowLayoutPanel();
+            bottomFlowLayout.Dock = DockStyle.Bottom;
+            bottomFlowLayout.FlowDirection = FlowDirection.LeftToRight;
+            bottomFlowLayout.BackColor= Color.DarkGray;
+
+            Button editButton = new Button();
+            editButton.Text = "Ürün Düzenle";
+            editButton.Width = 100; // Genişlik
+            editButton.Height = 50; // Yükseklik
+            editButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            editButton.BackColor = Color.Red;
+            editButton.Click += EditButton_Clicked;
+            bottomFlowLayout.Controls.Add(editButton);
+
+
+            Panel emptySpace = new Panel();
+            emptySpace.Width = 100; // Boşluk genişliği
+
+            Button halfButton = new Button();
+            halfButton.Text = "Az";
+            halfButton.Width = 100; // Genişlik
+            halfButton.Height = 50; // Yükseklik
+            halfButton.Font = new Font("Arial", 12, FontStyle.Bold);
+
+            Button fullButton = new Button();
+            fullButton.Text = "Tam";
+            fullButton.Width = 100; // Genişlik
+            fullButton.Height = 50; // Yükseklik
+            fullButton.Font = new Font("Arial", 12, FontStyle.Bold);
+
+            Panel emptySpace2 = new Panel();
+            emptySpace2.Width = 100; // Boşluk genişliği
+
+            Label totalFiyat = new Label();
+            totalFiyat.Text = "Toplam Fiyat";
+            totalFiyat.Dock = DockStyle.Left;
+            totalFiyat.Font = new System.Drawing.Font("Arial Rounded MT Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            totalFiyat.AutoSize = true;
+            totalFiyat.TabIndex = 3;
+
+            TextBox textBox = new TextBox();
+            textBox.Width = 200; // Genişlik
+            textBox.Height = 50; // Yükseklik
+            textBox.ReadOnly=true;
+            textBox.Multiline = true;
+
+
+            Panel emptySpace3 = new Panel();
+            emptySpace3.Width = 100; // Boşluk genişliği
+
+
+            Button cashButton = new Button();
+            cashButton.Text = "Nakit";
+            cashButton.Width = 100; // Genişlik
+            cashButton.Height = 50; // Yükseklik
+            cashButton.Font = new Font("Arial", 12, FontStyle.Bold);
+
+            Button creditButton = new Button();
+            creditButton.Text = "Kredi";
+            creditButton.Width = 100; // Genişlik
+            creditButton.Height = 50; // Yükseklik
+            creditButton.Font = new Font("Arial", 12, FontStyle.Bold);
+
+            // Butonlara tıklama olayları ekleyin (isterseniz)
+            // ... diğer butonlar için de ekleyebilirsiniz.
+
+            bottomFlowLayout.Controls.Add(emptySpace);
+
+            bottomFlowLayout.Controls.Add(halfButton);
+            bottomFlowLayout.Controls.Add(fullButton);
+            bottomFlowLayout.Controls.Add(emptySpace2);
+
+            bottomFlowLayout.Controls.Add(totalFiyat);
+            bottomFlowLayout.Controls.Add(textBox);
+
+            bottomFlowLayout.Controls.Add(emptySpace3);
+
+            bottomFlowLayout.Controls.Add(cashButton);
+            bottomFlowLayout.Controls.Add(creditButton);
+
+            // Diğer FlowLayoutPanel'ları buraya ekleyin
+
+
+
+            Controls.Add(leftFlowLayout);
+            Controls.Add(rightFlowLayout);
+            Controls.Add(bottomFlowLayout);
+
+            // Formun boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
+            this.Resize += YourForm_Resize;
+        }
+        private void EditButton_Clicked(object sender, EventArgs e)
+        {
+            Form2 yeniForm = new Form2();
+            yeniForm.Show();
+        }
+
+        private void YourForm_Resize(object sender, EventArgs e)
+        {
+            // Form boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
+            leftFlowLayout.Width = (int)(Width * leftPercentage);
+            rightFlowLayout.Width = (int)(Width * rightPercentage);
+            //bottomFlowLayout.Width = (int)(Width * leftPercentage);
+        }
+
+
+
+
+
+
         private void NewButton_Load(object sender, EventArgs e)
         {
-            CreateCategoriesButtons();
+            FetchDataFromDatabase();
+            InitializeLayouts();
             CreateCustomButton();
-            CreateRightPanel();
-            InitializeTotalAmountTextBox();
+            CreateCategoriesButtons();
+
+            //CreateRightPanel();
+            //InitializeTotalAmountTextBox();
         }
-        private void InitializeTotalAmountTextBox()
+        /*private void InitializeTotalAmountTextBox()
         {
             totalAmountTextBox = new TextBox();
             totalAmountTextBox.Dock = DockStyle.Bottom;
             totalAmountTextBox.Multiline = true;
             totalAmountTextBox.ReadOnly = true;
             this.Controls.Add(totalAmountTextBox);
-        }
+        }*/
 
-        private void CreateRightPanel()
+        private void CreateRightListBox()
         {
-            infoListBox = new ListBox();
-            infoListBox.Dock = DockStyle.Right;
-            infoListBox.Width = 300;
-            infoListBox.Height = 10;
+            billListBox = new ListBox();
+            billListBox.Anchor = AnchorStyles.Bottom;
+            billListBox.Width = rightFlowLayout.Width;
+            billListBox.Height = rightFlowLayout.Height;
 
-            infoListBox.DoubleClick += InfoListBox_DoubleClick;
 
-            this.Controls.Add(infoListBox);
+            //infoListBox.DoubleClick += InfoListBox_DoubleClick;
+
+            rightFlowLayout.Controls.Add(billListBox);
         }
         public void AddInfoToRightPanel(string foodName, int adet, float fullPrice, bool isFull)
         {
             string info = $"{foodName}: Adet - {adet},Tam - {isFull}, Fiyat - {fullPrice:C}";
-            infoListBox.Items.Add(new CustomListBoxItem(foodName, adet, fullPrice));
+            billListBox.Items.Add(new CustomListBoxItem(foodName, adet, fullPrice));
             UpdateTotalAmount();
         }
         private void UpdateTotalAmount()
@@ -134,7 +294,7 @@ namespace WindowsFormsApp3
         {
             float totalAmount = 0;
 
-            foreach (CustomListBoxItem item in infoListBox.Items)
+            foreach (CustomListBoxItem item in billListBox.Items)
             {
                 totalAmount += (item.FullPrice*item.Adet);
             }
@@ -144,7 +304,7 @@ namespace WindowsFormsApp3
         private void InfoListBox_DoubleClick(object sender, EventArgs e)
         {
             // Seçili öğeyi al
-            CustomListBoxItem selectedItem = infoListBox.SelectedItem as CustomListBoxItem;
+            CustomListBoxItem selectedItem = billListBox.SelectedItem as CustomListBoxItem;
 
             // Seçili öğe varsa adetini arttır
             if (selectedItem != null)
@@ -155,13 +315,13 @@ namespace WindowsFormsApp3
         }
         private void UpdateListBoxItem(CustomListBoxItem item)
         {
-            int selectedIndex = infoListBox.SelectedIndex;
+            int selectedIndex = billListBox.SelectedIndex;
 
             // Seçili öğeyi kaldır
-            infoListBox.Items.RemoveAt(selectedIndex);
+            billListBox.Items.RemoveAt(selectedIndex);
 
             // Güncellenmiş öğeyi ekleyin
-            infoListBox.Items.Insert(selectedIndex, item);
+            billListBox.Items.Insert(selectedIndex, item);
             UpdateTotalAmount();
         }
         public class CustomListBoxItem
@@ -182,50 +342,85 @@ namespace WindowsFormsApp3
         }
         private void CreateCustomButton()
         {
-            FlowLayoutPanel flowLayoutPanel;
-            flowLayoutPanel = new FlowLayoutPanel();
-            flowLayoutPanel.Dock = DockStyle.Bottom; // Sadece alt kısmını kaplamasını sağlar
-            flowLayoutPanel.Height = 200;
-
-            // İstediğiniz kadar CustomButton nesnesini oluşturun
-            CustomButton button1 = new CustomButton("Et", 5.99f, 9.99f, "Et Yemekleri");
-            CustomButton button2 = new CustomButton("Tatlı", 6.99f, 10.99f, "Tatlı Çeşitleri");
-            CustomButton button3 = new CustomButton("İçecek", 7.99f, 11.99f, "İçecek Çeşitleri");
-
-            // Tüm butonları bir dizi içinde toplamak
-            allButtons = new CustomButton[] { button1, button2, button3 };
-
-            // Butonları FlowLayoutPanel'e ekle
             foreach (var button in allButtons)
             {
                 button.Text = button.FoodName;
-                flowLayoutPanel.Controls.Add(button);
+                leftFlowLayout.Controls.Add(button);
             }
 
-            // Forma FlowLayoutPanel'i ekle
-            this.Controls.Add(flowLayoutPanel);
+        }
+        private void FetchDataFromDatabase()
+        {
+            string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
+
+            //sql baglantisi kuruldu
+            string bilgisayarAdi = Environment.MachineName;
+            string connectionString = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                try
+                {
+                    connection.Open();
+
+                    string sql = "SELECT * FROM DbFood.dbo.FoodMenu";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string buttonName = reader["FoodName"].ToString();
+                                float halfPrice = Convert.ToSingle(reader["HalfPrice"]);
+                                float fullPrice = Convert.ToSingle(reader["FullPrice"]);
+                                string category = reader["FoodCategory"].ToString();
+
+                                // Kullanıcıdan alınan verileri kullanarak CustomButton nesnelerini oluşturabilirsiniz.
+                                CustomButton customButton = new CustomButton(buttonName, halfPrice, fullPrice, category);
+
+                                // Oluşturulan CustomButton nesnesini kullanabilirsiniz.
+                                // ...
+
+                                // Oluşturulan CustomButton nesnesini allButtons listesine ekleyin
+                                allButtons.Add(customButton);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: " + ex.Message);
+                }
+            }
+        }
+
+        public static string[] GetCategorysArray()
+        {
+            // Bu metodun gerçek implementasyonu size özeldir.
+            // Örneğin, veritabanından kategorileri çekiyorsanız, "Tümü" string'ini ekleyebilirsiniz.
+
+            // Örnek olarak:
+            string[] categoriesFromDatabase = Form1.GetCategorysArray();
+
+            // "Tümü" string'ini ekleyerek yeni bir dizi oluşturun
+            string[] categoriesWithAll = new string[categoriesFromDatabase.Length + 1];
+            categoriesWithAll[0] = "Tümü";
+            Array.Copy(categoriesFromDatabase, 0, categoriesWithAll, 1, categoriesFromDatabase.Length);
+
+            return categoriesWithAll;
         }
         private void CreateCategoriesButtons()
         {
-            // FlowLayoutPanel oluştur
-            FlowLayoutPanel flowLayoutPanel = new FlowLayoutPanel();
-            flowLayoutPanel.Dock = DockStyle.Top;
-
-
-
-            // Kategori butonlarını oluştur ve FlowLayoutPanel'e ekle
-            foreach (string category in categories)
+            foreach (string category in GetCategorysArray())
             {
                 Button categoryButton = new Button();
                 categoryButton.Text = category;
                 categoryButton.Size = new System.Drawing.Size(100, 50);
                 categoryButton.Click += CategoryButton_Click;
-                flowLayoutPanel.Controls.Add(categoryButton);
+                rightFlowLayout.Controls.Add(categoryButton);
             }
+            CreateRightListBox();
 
-
-            // Forma FlowLayoutPanel'i ekle
-            this.Controls.Add(flowLayoutPanel);
         }
 
 
@@ -236,7 +431,7 @@ namespace WindowsFormsApp3
             if (clickedButton != null)
             {
                 string categoryName = clickedButton.Text;
-                //Showhide fonskiyonuyla text ile eşit olmayanları hidela
+                buttonsLabel.Text = categoryName;
                 ShowHideButtons(categoryName);
 
             }
@@ -246,7 +441,7 @@ namespace WindowsFormsApp3
         {
             foreach (CustomButton button in allButtons)
             {
-                if(desiredCategory== categories[0])
+                if(desiredCategory== GetCategorysArray()[0])
                 {
                     button.Show();
                 }
