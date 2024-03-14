@@ -22,6 +22,7 @@ namespace WindowsFormsApp3
         public float HalfPrice { get; set; }
         public float FullPrice { get; set; }
         public string Category { get; set; }
+        public bool IsFull { get; set; }
         public int Adet { get; set; }
 
         // Yeni bir olay
@@ -54,24 +55,13 @@ namespace WindowsFormsApp3
             base.OnClick(e);
             this.BackColor = Color.Red;
             Selected = true;
-            Console.WriteLine($"FoodName: {FoodName}  Tam Fiyat: {FullPrice}  Tam mı ?:{Selected} Kategorisi ne :{Category}");
+            Console.WriteLine($"FoodName: {FoodName}  Tam Fiyat: {FullPrice}  Tam mı ?:{IsFull}");
           
 
             if (CustomClick != null)
                 CustomClick(this, e);
         }
-        private void AddInfoToListBox()
-        {
-            // NewButton formunu bul
-            NewMain newButton = this.FindForm() as NewMain;
 
-            // NewButton bulunamazsa işlemi sonlandır
-            if (newButton == null)
-                return;
-
-            // Bilgileri sağ tarafa ekleyen fonksiyonu çağır
-            newButton.AddInfoToRightPanel(FoodName, Adet, FullPrice,Selected);
-        }
 
     }
 
@@ -161,12 +151,14 @@ namespace WindowsFormsApp3
             halfButton.Width = 100; // Genişlik
             halfButton.Height = 50; // Yükseklik
             halfButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            halfButton.Click += HalfButton_Click;
 
             Button fullButton = new Button();
             fullButton.Text = "Tam";
             fullButton.Width = 100; // Genişlik
             fullButton.Height = 50; // Yükseklik
             fullButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            fullButton.Click += FullButton_Click;
 
             Panel emptySpace2 = new Panel();
             emptySpace2.Width = 100; // Boşluk genişliği
@@ -178,11 +170,11 @@ namespace WindowsFormsApp3
             totalFiyat.AutoSize = true;
             totalFiyat.TabIndex = 3;
 
-            TextBox textBox = new TextBox();
-            textBox.Width = 200; // Genişlik
-            textBox.Height = 50; // Yükseklik
-            textBox.ReadOnly=true;
-            textBox.Multiline = true;
+            totalAmountTextBox = new TextBox();
+            totalAmountTextBox.Width = 200; // Genişlik
+            totalAmountTextBox.Height = 50; // Yükseklik
+            totalAmountTextBox.ReadOnly=true;
+            totalAmountTextBox.Multiline = true;
 
 
             Panel emptySpace3 = new Panel();
@@ -194,12 +186,15 @@ namespace WindowsFormsApp3
             cashButton.Width = 100; // Genişlik
             cashButton.Height = 50; // Yükseklik
             cashButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            cashButton.Click += CashButton_Clicked;
+
 
             Button creditButton = new Button();
             creditButton.Text = "Kredi";
             creditButton.Width = 100; // Genişlik
             creditButton.Height = 50; // Yükseklik
             creditButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            creditButton.Click += CreditButton_Clicked;
 
             // Butonlara tıklama olayları ekleyin (isterseniz)
             // ... diğer butonlar için de ekleyebilirsiniz.
@@ -211,7 +206,7 @@ namespace WindowsFormsApp3
             bottomFlowLayout.Controls.Add(emptySpace2);
 
             bottomFlowLayout.Controls.Add(totalFiyat);
-            bottomFlowLayout.Controls.Add(textBox);
+            bottomFlowLayout.Controls.Add(totalAmountTextBox);
 
             bottomFlowLayout.Controls.Add(emptySpace3);
 
@@ -229,21 +224,60 @@ namespace WindowsFormsApp3
             // Formun boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
             this.Resize += YourForm_Resize;
         }
-        private void EditButton_Clicked(object sender, EventArgs e)
-        {
-            Form2 yeniForm = new Form2();
-            yeniForm.Show();
-        }
 
         private void YourForm_Resize(object sender, EventArgs e)
         {
             // Form boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
             leftFlowLayout.Width = (int)(Width * leftPercentage);
             rightFlowLayout.Width = (int)(Width * rightPercentage);
+            billListBox.Width = (int)(Width * rightPercentage);
+            billListBox.Height= (int)(Height * rightPercentage);
             //bottomFlowLayout.Width = (int)(Width * leftPercentage);
         }
 
 
+        private void EditButton_Clicked(object sender, EventArgs e)
+        {
+            Form2 yeniForm = new Form2();
+            yeniForm.Show();
+        }
+
+
+        private void FullButton_Click(object sender, EventArgs e)
+        {
+            foreach (CustomButton customButton in allButtons)
+            {
+                if (customButton.Selected==true)
+                {
+                    AddInfoToRightPanel( customButton.FoodName,customButton.Adet,true,customButton.HalfPrice,customButton.FullPrice);
+                }
+                customButton.Selected = false;
+                customButton.BackColor = Color.White;
+            }
+
+        }
+
+        private void HalfButton_Click(object sender, EventArgs e)
+        {
+            foreach (CustomButton customButton in allButtons)
+            {
+                if (customButton.Selected == true)
+                {
+                    AddInfoToRightPanel(customButton.FoodName, customButton.Adet, false, customButton.HalfPrice, customButton.FullPrice);
+                }
+                customButton.Selected = false;
+                customButton.BackColor = Color.White;
+            }
+        }
+
+        private void CashButton_Clicked(object sender, EventArgs e)
+        {
+
+        }
+        private void CreditButton_Clicked(object sender, EventArgs e)
+        {
+
+        }
 
 
 
@@ -279,16 +313,16 @@ namespace WindowsFormsApp3
 
             rightFlowLayout.Controls.Add(billListBox);
         }
-        public void AddInfoToRightPanel(string foodName, int adet, float fullPrice, bool isFull)
+        public void AddInfoToRightPanel(string foodName, int adet, bool isFull,float hprice ,float fprice)
         {
-            string info = $"{foodName}: Adet - {adet},Tam - {isFull}, Fiyat - {fullPrice:C}";
-            billListBox.Items.Add(new CustomListBoxItem(foodName, adet, fullPrice));
+            //string info = $"{foodName}: Adet - {adet},Tam - {isFull}, Fiyat - {fprice:C}";
+            billListBox.Items.Add(new CustomListBoxItem(foodName, adet, isFull,hprice ,fprice));
             UpdateTotalAmount();
         }
         private void UpdateTotalAmount()
         {
             float totalAmount = CalculateTotalAmount(); // Bu fonksiyonu kendi hesaplamalarınıza göre düzenleyin
-            totalAmountTextBox.Text = $"Toplam Fiyat: {totalAmount:C}";
+            totalAmountTextBox.Text = $"{totalAmount:C}";
         }
         private float CalculateTotalAmount()
         {
@@ -296,7 +330,15 @@ namespace WindowsFormsApp3
 
             foreach (CustomListBoxItem item in billListBox.Items)
             {
-                totalAmount += (item.FullPrice*item.Adet);
+                if (item.IsFull==true)
+                {
+                    totalAmount += (item.FullPrice * item.Adet);
+                }
+                else
+                {
+                    totalAmount += (item.HalfPrice * item.Adet);
+                }
+                
             }
 
             return totalAmount;
@@ -329,15 +371,19 @@ namespace WindowsFormsApp3
             public string FoodName { get; set; }
             public int Adet { get; set; }
             public float FullPrice { get; set; }
-            public CustomListBoxItem(string foodName, int adet, float fullPrice)
+            public float HalfPrice {  get; set; }
+            public bool IsFull {  get; set; }
+            public CustomListBoxItem(string foodName, int adet, bool isFull,float halfPrice, float fprice)
             {
                 FoodName = foodName;
                 Adet = adet;
-                FullPrice = fullPrice;
+                IsFull = isFull;
+                HalfPrice = halfPrice;
+                FullPrice = fprice;
             }
             public override string ToString()
             {
-                return $"{FoodName}: Adet - {Adet}, Fiyat - {FullPrice:C}";
+                return $"---{FoodName}: - {Adet}- Tam mı?{IsFull}- {HalfPrice:C} - {FullPrice:C}  ";
             }
         }
         private void CreateCustomButton()
@@ -396,8 +442,7 @@ namespace WindowsFormsApp3
 
         public static string[] GetCategorysArray()
         {
-            // Bu metodun gerçek implementasyonu size özeldir.
-            // Örneğin, veritabanından kategorileri çekiyorsanız, "Tümü" string'ini ekleyebilirsiniz.
+
 
             // Örnek olarak:
             string[] categoriesFromDatabase = Form1.GetCategorysArray();
