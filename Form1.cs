@@ -22,11 +22,16 @@ namespace WindowsFormsApp3
         public static String[] GetCategorysArray()
         {
             string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
-
+            string sqlBaglantisi;
             //sql baglantisi kuruldu
             string bilgisayarAdi = Environment.MachineName;
-            string sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-
+            if (Environment.MachineName == mehmedin) {
+                sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
+            else
+            {
+                sqlBaglantisi = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
             //kategori isimleri cekilmesi icin sql komutu set edildi
             string query = "SELECT DISTINCT FoodCategory FROM DbFood.dbo.FoodMenu";
 
@@ -79,6 +84,11 @@ namespace WindowsFormsApp3
         }
 
         private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
 
         }

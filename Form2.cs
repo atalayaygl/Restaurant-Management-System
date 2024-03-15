@@ -14,12 +14,22 @@ namespace WindowsFormsApp3
 {
     public partial class Form2 : Form
     {
-        string bilgisayarAdi = Environment.MachineName;
-        string sqlBaglantisi;
+        String bilgisayarAdi = Environment.MachineName;
+        String sqlBaglantisi;
+        String mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
         public Form2()
         {
-            string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
-            sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            
+            if (bilgisayarAdi == "")
+            {
+                sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
+            else
+            {
+                sqlBaglantisi = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
+
+
             InitializeComponent();
         }
 
