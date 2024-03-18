@@ -21,12 +21,12 @@ namespace WindowsFormsApp3
         //Muslugu taktim, kategoriler bu fonksiyon ile cagirilacak
         public static String[] GetCategorysArray()
         {
-            string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
+            string mehmedin = "DESKTOP-ISC3MCL";
             string sqlBaglantisi;
             //sql baglantisi kuruldu
             string bilgisayarAdi = Environment.MachineName;
             if (Environment.MachineName == mehmedin) {
-                sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+                sqlBaglantisi = $"Data Source=DESKTOP-ISC3MCL\\SQLEXPRESS;Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             }
             else
             {

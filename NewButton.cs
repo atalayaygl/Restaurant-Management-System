@@ -54,9 +54,7 @@ namespace WindowsFormsApp3
         {
             base.OnClick(e);
             this.BackColor = Color.Red;
-            Selected = true;
-            Console.WriteLine($"FoodName: {FoodName}  Tam Fiyat: {FullPrice}  Tam mı ?:{IsFull}");
-          
+            Selected = true;          
 
             if (CustomClick != null)
                 CustomClick(this, e);
@@ -68,7 +66,7 @@ namespace WindowsFormsApp3
 
     public partial class NewMain : Form
     {
-
+        private ComboBox adetComboBox;
         private TextBox totalAmountTextBox;
         private Label buttonsLabel;
 
@@ -110,7 +108,7 @@ namespace WindowsFormsApp3
             /////////////////////////////////////////sağ taraf
             rightFlowLayout = new FlowLayoutPanel();
             rightFlowLayout.Dock = DockStyle.Right;
-            rightFlowLayout.Width = (int)(Width * rightPercentage);
+            rightFlowLayout.Width = (int)(Width * rightPercentage-10);
             rightFlowLayout.FlowDirection = FlowDirection.LeftToRight;
             rightFlowLayout.BackColor = Color.LightGreen; // Sağ tarafın arka plan rengi
 
@@ -141,6 +139,14 @@ namespace WindowsFormsApp3
             editButton.BackColor = Color.Red;
             editButton.Click += EditButton_Clicked;
             bottomFlowLayout.Controls.Add(editButton);
+
+            adetComboBox = new ComboBox();
+            adetComboBox.Width = 100;
+            adetComboBox.Height = 50;
+            for (int i = 1; i <= 20; i++)
+            {
+                adetComboBox.Items.Add(i.ToString());
+            }
 
 
             Panel emptySpace = new Panel();
@@ -199,6 +205,7 @@ namespace WindowsFormsApp3
             // Butonlara tıklama olayları ekleyin (isterseniz)
             // ... diğer butonlar için de ekleyebilirsiniz.
 
+            bottomFlowLayout.Controls.Add(adetComboBox);
             bottomFlowLayout.Controls.Add(emptySpace);
 
             bottomFlowLayout.Controls.Add(halfButton);
@@ -225,6 +232,7 @@ namespace WindowsFormsApp3
             this.Resize += YourForm_Resize;
         }
 
+
         private void YourForm_Resize(object sender, EventArgs e)
         {
             // Form boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
@@ -249,7 +257,7 @@ namespace WindowsFormsApp3
             {
                 if (customButton.Selected==true)
                 {
-                    AddInfoToRightPanel( customButton.FoodName,customButton.Adet,true,customButton.HalfPrice,customButton.FullPrice);
+                    AddInfoToRightPanel( customButton.FoodName,customButton.Adet= int.Parse(adetComboBox.Text),true,customButton.HalfPrice,customButton.FullPrice);
                 }
                 customButton.Selected = false;
                 customButton.BackColor = Color.White;
@@ -263,7 +271,7 @@ namespace WindowsFormsApp3
             {
                 if (customButton.Selected == true)
                 {
-                    AddInfoToRightPanel(customButton.FoodName, customButton.Adet, false, customButton.HalfPrice, customButton.FullPrice);
+                    AddInfoToRightPanel(customButton.FoodName, customButton.Adet= int.Parse(adetComboBox.Text), false, customButton.HalfPrice, customButton.FullPrice);
                 }
                 customButton.Selected = false;
                 customButton.BackColor = Color.White;
@@ -292,14 +300,6 @@ namespace WindowsFormsApp3
             //CreateRightPanel();
             //InitializeTotalAmountTextBox();
         }
-        /*private void InitializeTotalAmountTextBox()
-        {
-            totalAmountTextBox = new TextBox();
-            totalAmountTextBox.Dock = DockStyle.Bottom;
-            totalAmountTextBox.Multiline = true;
-            totalAmountTextBox.ReadOnly = true;
-            this.Controls.Add(totalAmountTextBox);
-        }*/
 
         private void CreateRightListBox()
         {
@@ -383,7 +383,7 @@ namespace WindowsFormsApp3
             }
             public override string ToString()
             {
-                return $"---{FoodName}: - {Adet}- Tam mı?{IsFull}- {HalfPrice:C} - {FullPrice:C}  ";
+                return $"{FoodName}: - {Adet}- Tam mı?{IsFull}- {HalfPrice:C} - {FullPrice:C}  ";
             }
         }
         private void CreateCustomButton()

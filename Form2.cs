@@ -16,13 +16,13 @@ namespace WindowsFormsApp3
     {
         String bilgisayarAdi = Environment.MachineName;
         String sqlBaglantisi;
-        String mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
+        
         public Form2()
         {
             
-            if (bilgisayarAdi == "")
+            if (bilgisayarAdi == "DESKTOP-ISC3MCL")
             {
-                sqlBaglantisi = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+                sqlBaglantisi = $"Data Source=DESKTOP-ISC3MCL\\SQLEXPRESS;Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             }
             else
             {
