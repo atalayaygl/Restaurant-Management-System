@@ -443,11 +443,19 @@ namespace WindowsFormsApp3
         }
         private void FetchDataFromDatabase()
         {
-            string mehmedin = "DESKTOP-ISC3MCL\\SQLEXPRESS";
+            
 
             //sql baglantisi kuruldu
             string bilgisayarAdi = Environment.MachineName;
-            string connectionString = $"Data Source={mehmedin};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            string connectionString; 
+            if (bilgisayarAdi == "DESKTOP-ISC3MCL")
+            {
+                connectionString = $"Data Source=DESKTOP-ISC3MCL\\SQLEXPRESS;Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
+            else
+            {
+                connectionString = $"Data Source={bilgisayarAdi};Integrated Security=True;Connection Timeout=30;Encrypt=True;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            }
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
