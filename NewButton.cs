@@ -46,14 +46,19 @@ namespace WindowsFormsApp3
 
             this.Width = 100;
             this.Height = 50;
-
+            this.BackColor = Color.Wheat;
+            this.ForeColor = Color.Black;
+            Font = new Font("Arial", 10, FontStyle.Bold);
         }
 
         // Yeni tıklama olayı
         protected override void OnClick(EventArgs e)
         {
             base.OnClick(e);
-            this.BackColor = Color.Red;
+            this.BackColor = Color.White;
+            this.ForeColor = Color.Black;
+            Font = new Font("Arial", 10, FontStyle.Bold);
+
             Selected = true;          
 
             if (CustomClick != null)
@@ -81,6 +86,7 @@ namespace WindowsFormsApp3
         private ListBox billListBox;
         //CustomButton[] allButtons;
         private List<CustomButton> allButtons = new List<CustomButton>();
+        
 
         //public string[] categories = Form1.GetCategorysArray();
         public NewMain()
@@ -95,7 +101,7 @@ namespace WindowsFormsApp3
             leftFlowLayout.Dock = DockStyle.Left;
             leftFlowLayout.Width = (int)(Width * leftPercentage);
             leftFlowLayout.FlowDirection = FlowDirection.TopDown;
-            leftFlowLayout.BackColor = Color.LightBlue; // Sol tarafın arka plan rengi
+            leftFlowLayout.BackColor = Color.BurlyWood; // Sol tarafın arka plan rengi
 
             buttonsLabel=new Label();
             buttonsLabel.Text = "Tümü";
@@ -110,7 +116,7 @@ namespace WindowsFormsApp3
             rightFlowLayout.Dock = DockStyle.Right;
             rightFlowLayout.Width = (int)(Width * rightPercentage-10);
             rightFlowLayout.FlowDirection = FlowDirection.LeftToRight;
-            rightFlowLayout.BackColor = Color.LightGreen; // Sağ tarafın arka plan rengi
+            rightFlowLayout.BackColor = Color.BurlyWood; // Sağ tarafın arka plan rengi
 
 
             Label catagoryLabel = new Label();
@@ -129,14 +135,14 @@ namespace WindowsFormsApp3
             bottomFlowLayout = new FlowLayoutPanel();
             bottomFlowLayout.Dock = DockStyle.Bottom;
             bottomFlowLayout.FlowDirection = FlowDirection.LeftToRight;
-            bottomFlowLayout.BackColor= Color.DarkGray;
+            bottomFlowLayout.BackColor= Color.Wheat;
 
             Button editButton = new Button();
             editButton.Text = "Ürün Düzenle";
             editButton.Width = 100; // Genişlik
             editButton.Height = 50; // Yükseklik
             editButton.Font = new Font("Arial", 12, FontStyle.Bold);
-            editButton.BackColor = Color.Red;
+            editButton.BackColor = Color.White;
             editButton.Click += EditButton_Clicked;
             bottomFlowLayout.Controls.Add(editButton);
 
@@ -348,22 +354,53 @@ namespace WindowsFormsApp3
             billListBox.Anchor = AnchorStyles.Bottom;
             billListBox.Width = rightFlowLayout.Width;
             billListBox.Height = rightFlowLayout.Height;
+            billListBox.Font = new Font("Arial", 12, FontStyle.Bold);
 
-
+            billListBox.DrawMode = DrawMode.OwnerDrawFixed;
+            billListBox.DrawItem += BillListBox_DrawItem;
             //infoListBox.DoubleClick += InfoListBox_DoubleClick;
 
             rightFlowLayout.Controls.Add(billListBox);
         }
+
+
+        private void BillListBox_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+            e.DrawFocusRectangle();
+
+            if (e.Index >= 0)
+            {
+                CustomListBoxItem item = billListBox.Items[e.Index] as CustomListBoxItem;
+                if (item != null)
+                {
+                    string foodName = item.FoodName;
+                    int adet = item.Adet;
+                    bool isFull = item.IsFull;
+                    float price = isFull ? item.FullPrice : item.HalfPrice;
+
+                    string info = $"{foodName,10} Adet - {adet,10} Tam - {isFull,10} Fiyat - {price:C}";
+
+                    e.Graphics.DrawString(info, e.Font, new SolidBrush(e.ForeColor), e.Bounds);
+                }
+            }
+        }
+
+
+
+
         public void AddInfoToRightPanel(string foodName, int adet, bool isFull,float hprice ,float fprice)
         {
             //string info = $"{foodName}: Adet - {adet},Tam - {isFull}, Fiyat - {fprice:C}";
             billListBox.Items.Add(new CustomListBoxItem(foodName, adet, isFull,hprice ,fprice));
+            
             UpdateTotalAmount();
         }
         private void UpdateTotalAmount()
         {
             float totalAmount = CalculateTotalAmount(); // Bu fonksiyonu kendi hesaplamalarınıza göre düzenleyin
             totalAmountTextBox.Text = $"{totalAmount:C}";
+            totalAmountTextBox.Font = new Font("Arial", 12, FontStyle.Bold);
         }
         private float CalculateTotalAmount()
         {
@@ -421,7 +458,12 @@ namespace WindowsFormsApp3
                 IsFull = isFull;
                 HalfPrice = halfPrice;
                 FullPrice = fprice;
+
+                
+                
             }
+            
+
             public override string ToString()
             {
                 string a;
@@ -444,6 +486,7 @@ namespace WindowsFormsApp3
             foreach (var button in allButtons)
             {
                 button.Text = button.FoodName;
+                button.Font = new Font("Arial", 10, FontStyle.Bold);
                 leftFlowLayout.Controls.Add(button);
             }
 
@@ -522,6 +565,7 @@ namespace WindowsFormsApp3
                 Button categoryButton = new Button();
                 categoryButton.Text = category;
                 categoryButton.Size = new System.Drawing.Size(100, 50);
+                categoryButton.Font = new Font("Arial", 10, FontStyle.Bold);
                 categoryButton.Click += CategoryButton_Click;
                 rightFlowLayout.Controls.Add(categoryButton);
             }
@@ -539,6 +583,8 @@ namespace WindowsFormsApp3
                 string categoryName = clickedButton.Text;
                 buttonsLabel.Text = categoryName;
                 ShowHideButtons(categoryName);
+                clickedButton.BackColor = Color.White;
+                
 
             }
         }
