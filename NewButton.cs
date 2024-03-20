@@ -140,6 +140,13 @@ namespace WindowsFormsApp3
             editButton.Click += EditButton_Clicked;
             bottomFlowLayout.Controls.Add(editButton);
 
+            Label adetText = new Label();
+            adetText.Text = "Adet";
+            adetText.Dock = DockStyle.Left;
+            adetText.Font = new System.Drawing.Font("Arial Rounded MT Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            adetText.AutoSize = true;
+            adetText.TabIndex = 3;
+
             adetComboBox = new ComboBox();
             adetComboBox.Width = 100;
             adetComboBox.Height = 50;
@@ -150,7 +157,7 @@ namespace WindowsFormsApp3
 
 
             Panel emptySpace = new Panel();
-            emptySpace.Width = 100; // Boşluk genişliği
+            emptySpace.Width = 50; // Boşluk genişliği
 
             Button halfButton = new Button();
             halfButton.Text = "Az";
@@ -166,8 +173,7 @@ namespace WindowsFormsApp3
             fullButton.Font = new Font("Arial", 12, FontStyle.Bold);
             fullButton.Click += FullButton_Click;
 
-            Panel emptySpace2 = new Panel();
-            emptySpace2.Width = 100; // Boşluk genişliği
+
 
             Label totalFiyat = new Label();
             totalFiyat.Text = "Toplam Fiyat";
@@ -181,10 +187,6 @@ namespace WindowsFormsApp3
             totalAmountTextBox.Height = 50; // Yükseklik
             totalAmountTextBox.ReadOnly=true;
             totalAmountTextBox.Multiline = true;
-
-
-            Panel emptySpace3 = new Panel();
-            emptySpace3.Width = 100; // Boşluk genişliği
 
 
             Button cashButton = new Button();
@@ -202,23 +204,33 @@ namespace WindowsFormsApp3
             creditButton.Font = new Font("Arial", 12, FontStyle.Bold);
             creditButton.Click += CreditButton_Clicked;
 
+            Button clearButton = new Button();
+            clearButton.Text = "Temizle";
+            clearButton.Width = 100; // Genişlik
+            clearButton.Height = 50; // Yükseklik
+            clearButton.Font = new Font("Arial", 12, FontStyle.Bold);
+            clearButton.Click += ClearButton_Clicked;
+
             // Butonlara tıklama olayları ekleyin (isterseniz)
             // ... diğer butonlar için de ekleyebilirsiniz.
-
+            bottomFlowLayout.Controls.Add(adetText);
             bottomFlowLayout.Controls.Add(adetComboBox);
-            bottomFlowLayout.Controls.Add(emptySpace);
+            //bottomFlowLayout.Controls.Add(emptySpace);
 
             bottomFlowLayout.Controls.Add(halfButton);
             bottomFlowLayout.Controls.Add(fullButton);
-            bottomFlowLayout.Controls.Add(emptySpace2);
+            bottomFlowLayout.Controls.Add(emptySpace);
 
             bottomFlowLayout.Controls.Add(totalFiyat);
             bottomFlowLayout.Controls.Add(totalAmountTextBox);
 
-            bottomFlowLayout.Controls.Add(emptySpace3);
+            //bottomFlowLayout.Controls.Add(emptySpace);
 
             bottomFlowLayout.Controls.Add(cashButton);
             bottomFlowLayout.Controls.Add(creditButton);
+
+            //bottomFlowLayout.Controls.Add(emptySpace);
+            bottomFlowLayout.Controls.Add(clearButton);
 
             // Diğer FlowLayoutPanel'ları buraya ekleyin
 
@@ -237,13 +249,20 @@ namespace WindowsFormsApp3
         {
             // Form boyutu değiştiğinde sol ve sağ tarafın yüzdelik oranlarını ayarla
             leftFlowLayout.Width = (int)(Width * leftPercentage);
-            rightFlowLayout.Width = (int)(Width * rightPercentage);
+            rightFlowLayout.Width = (int)(Width * rightPercentage-10);
             billListBox.Width = (int)(Width * rightPercentage);
             billListBox.Height= (int)(Height * rightPercentage);
             //bottomFlowLayout.Width = (int)(Width * leftPercentage);
         }
 
-
+        private void ClearButton_Clicked(object sender, EventArgs e) 
+        {
+            if (billListBox.SelectedItem != null)
+            {
+                billListBox.Items.Remove(billListBox.SelectedItem);
+            }
+            UpdateTotalAmount();
+        }
         private void EditButton_Clicked(object sender, EventArgs e)
         {
             Form2 yeniForm = new Form2();
@@ -253,11 +272,19 @@ namespace WindowsFormsApp3
 
         private void FullButton_Click(object sender, EventArgs e)
         {
+
             foreach (CustomButton customButton in allButtons)
             {
+                int adet;
+                if (!int.TryParse(adetComboBox.Text, out adet) || adet < 1)
+                {
+                    adet = 1; // Eğer metin sayıya dönüştürülemezse veya 1'den küçükse, varsayılan olarak adet 1 olarak ayarlanır.
+                }
+
+                customButton.Adet = adet;
                 if (customButton.Selected==true)
                 {
-                    AddInfoToRightPanel( customButton.FoodName,customButton.Adet= int.Parse(adetComboBox.Text),true,customButton.HalfPrice,customButton.FullPrice);
+                    AddInfoToRightPanel( customButton.FoodName,customButton.Adet= adet,true,customButton.HalfPrice,customButton.FullPrice);
                 }
                 customButton.Selected = false;
                 customButton.BackColor = Color.White;
@@ -269,9 +296,16 @@ namespace WindowsFormsApp3
         {
             foreach (CustomButton customButton in allButtons)
             {
+                int adet;
+                if (!int.TryParse(adetComboBox.Text, out adet) || adet < 1)
+                {
+                    adet = 1; // Eğer metin sayıya dönüştürülemezse veya 1'den küçükse, varsayılan olarak adet 1 olarak ayarlanır.
+                }
+
+                customButton.Adet = adet;
                 if (customButton.Selected == true)
                 {
-                    AddInfoToRightPanel(customButton.FoodName, customButton.Adet= int.Parse(adetComboBox.Text), false, customButton.HalfPrice, customButton.FullPrice);
+                    AddInfoToRightPanel(customButton.FoodName, customButton.Adet= adet, false, customButton.HalfPrice, customButton.FullPrice);
                 }
                 customButton.Selected = false;
                 customButton.BackColor = Color.White;
@@ -383,7 +417,19 @@ namespace WindowsFormsApp3
             }
             public override string ToString()
             {
-                return $"{FoodName}: - {Adet}- Tam mı?{IsFull}- {HalfPrice:C} - {FullPrice:C}  ";
+                string a;
+                float b;
+                if (IsFull==true)
+                {
+                    a = "Tam;";
+                    b = FullPrice;
+                }
+                else
+                {
+                    a = "Az";
+                    b= HalfPrice;
+                }
+                return $"{FoodName}: - Adet:{Adet} - {a} - {b:C}  ";
             }
         }
         private void CreateCustomButton()
