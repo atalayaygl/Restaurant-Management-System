@@ -312,6 +312,13 @@ namespace WindowsFormsApp3
             }
         }
 
+        // Atalay buraya fonksiyon yazacak
+        //
+        //
+        //
+        //
+        //
+        //
         private void CashButton_Clicked(object sender, EventArgs e)
         {
 
