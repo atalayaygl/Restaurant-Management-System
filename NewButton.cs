@@ -346,8 +346,8 @@ namespace WindowsFormsApp3
                     worksheet = excelPackage.Workbook.Worksheets.Add("Payments");
                     // Başlık satırını ekle
                     worksheet.Cells[1, 1].Value = "Saat";
-                    worksheet.Cells[1, 2].Value = "Ödeme Tipi";
-                    worksheet.Cells[1, 3].Value = "Toplam Ödeme";
+                    worksheet.Cells[1, 2].Value = "Toplam Ödeme";
+                    worksheet.Cells[1, 3].Value = "Ödeme Tipi";
                 }
 
                 // Bir sonraki boş satırın indisini bul
@@ -355,8 +355,8 @@ namespace WindowsFormsApp3
 
                 // Verileri yeni satıra yaz
                 worksheet.Cells[nextRow + 1, 1].Value = DateTime.Now.ToString("HH:mm:ss");
-                worksheet.Cells[nextRow + 1, 2].Value = payment_type;
-                worksheet.Cells[nextRow + 1, 3].Value = total_payment;
+                worksheet.Cells[nextRow + 1, 2].Value = total_payment;
+                worksheet.Cells[nextRow + 1, 3].Value = payment_type;
 
                 // Excel dosyasını kaydet
                 excelPackage.Save();
