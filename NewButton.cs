@@ -4,15 +4,18 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System;
+using System.IO;
+using OfficeOpenXml;
 
 namespace WindowsFormsApp3
 {
-    
     public class CustomButton : Button
     {
         
@@ -346,19 +349,55 @@ namespace WindowsFormsApp3
         }
 
         // Atalay buraya fonksiyon yazacak
-        //
-        //
-        //
-        //
-        //
-        //
+
+        public static void LogPayment(string total_payment, string payment_type)
+        {
+            // EPPlus kütüphanesinin lisans bağlamını belirle
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            // Bilgisayarın tarihini al
+            DateTime date_today = DateTime.Now;
+
+            // Excel dosyasının yolu
+            string folderPath = Path.Combine(Environment.CurrentDirectory, "payments", date_today.ToString("yyyy/MM/dd"));
+            Directory.CreateDirectory(folderPath); // Klasörü oluştur
+            string excelFilePath = Path.Combine(folderPath, "payments.xlsx");
+
+            // Excel paketini oluştur
+            using (ExcelPackage excelPackage = new ExcelPackage(new FileInfo(excelFilePath)))
+            {
+                ExcelWorksheet worksheet = excelPackage.Workbook.Worksheets.FirstOrDefault();
+
+                // Eğer sayfa yoksa yeni bir çalışma sayfası oluştur
+                if (worksheet == null)
+                {
+                    worksheet = excelPackage.Workbook.Worksheets.Add("Payments");
+                    // Başlık satırını ekle
+                    worksheet.Cells[1, 1].Value = "Saat";
+                    worksheet.Cells[1, 2].Value = "Toplam Ödeme";
+                    worksheet.Cells[1, 3].Value = "Ödeme Tipi";
+                }
+
+                // Bir sonraki boş satırın indisini bul
+                int nextRow = worksheet.Dimension?.Rows ?? 1;
+
+                // Verileri yeni satıra yaz
+                worksheet.Cells[nextRow + 1, 1].Value = DateTime.Now.ToString("HH:mm:ss");
+                worksheet.Cells[nextRow + 1, 2].Value = total_payment;
+                worksheet.Cells[nextRow + 1, 3].Value = payment_type;
+
+                // Excel dosyasını kaydet
+                excelPackage.Save();
+            }
+        }
+
+
         private void CashButton_Clicked(object sender, EventArgs e)
         {
-
+            LogPayment(totalAmountTextBox.Text, "Nakit");
         }
         private void CreditButton_Clicked(object sender, EventArgs e)
         {
-
+            LogPayment(totalAmountTextBox.Text, "Kart");
         }
 
 
