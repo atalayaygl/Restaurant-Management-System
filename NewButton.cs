@@ -55,11 +55,21 @@ namespace WindowsFormsApp3
         protected override void OnClick(EventArgs e)
         {
             base.OnClick(e);
-            this.BackColor = Color.White;
-            this.ForeColor = Color.Black;
+            Selected = !Selected;
+
+            if (Selected)
+            {
+                this.BackColor = Color.White;
+                this.ForeColor = Color.Black;
+            }
+            else 
+            {
+                this.BackColor = Color.Wheat;
+                this.ForeColor = Color.Black;
+            }
+
             Font = new Font("Arial", 10, FontStyle.Bold);
 
-            Selected = true;          
 
             if (CustomClick != null)
                 CustomClick(this, e);
@@ -86,7 +96,8 @@ namespace WindowsFormsApp3
         private ListBox billListBox;
         //CustomButton[] allButtons;
         private List<CustomButton> allButtons = new List<CustomButton>();
-        
+        private List<Button> categoryButtons = new List<Button>();
+
 
         //public string[] categories = Form1.GetCategorysArray();
         public NewMain()
@@ -100,15 +111,20 @@ namespace WindowsFormsApp3
             leftFlowLayout = new FlowLayoutPanel();
             leftFlowLayout.Dock = DockStyle.Left;
             leftFlowLayout.Width = (int)(Width * leftPercentage);
-            leftFlowLayout.FlowDirection = FlowDirection.TopDown;
+            leftFlowLayout.FlowDirection = FlowDirection.LeftToRight;
             leftFlowLayout.BackColor = Color.BurlyWood; // Sol tarafın arka plan rengi
 
             buttonsLabel=new Label();
             buttonsLabel.Text = "Tümü";
             buttonsLabel.Dock = DockStyle.Left;
             buttonsLabel.Font= new System.Drawing.Font("Arial Rounded MT Bold", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            buttonsLabel.AutoSize= true;
+            buttonsLabel.AutoSize= false;
+            buttonsLabel.Height =55;
             buttonsLabel.TabIndex=3;
+            buttonsLabel.TextAlign = ContentAlignment.MiddleCenter;
+            buttonsLabel.Padding = new Padding(0, (buttonsLabel.Height - buttonsLabel.Font.Height) / 4, 0, 0);
+
+
             leftFlowLayout.Controls.Add(buttonsLabel);
 
             /////////////////////////////////////////sağ taraf
@@ -272,7 +288,14 @@ namespace WindowsFormsApp3
         private void EditButton_Clicked(object sender, EventArgs e)
         {
             Form2 yeniForm = new Form2();
+            yeniForm.FormClosed += NewFormClosedEventHandler;
+
             yeniForm.Show();
+        }
+        private void NewFormClosedEventHandler(object sender, FormClosedEventArgs e)
+        {
+            // Ana formunuzu yenileme işlemleri burada gerçekleşir
+            RefreshMainForm();
         }
 
 
@@ -287,13 +310,15 @@ namespace WindowsFormsApp3
                     adet = 1; // Eğer metin sayıya dönüştürülemezse veya 1'den küçükse, varsayılan olarak adet 1 olarak ayarlanır.
                 }
 
-                customButton.Adet = adet;
+                
                 if (customButton.Selected==true)
                 {
+                    customButton.Adet = adet;
                     AddInfoToRightPanel( customButton.FoodName,customButton.Adet= adet,true,customButton.HalfPrice,customButton.FullPrice);
+                    customButton.BackColor = Color.Wheat;
+                    customButton.Selected = false;
                 }
-                customButton.Selected = false;
-                customButton.BackColor = Color.White;
+
             }
 
         }
@@ -308,13 +333,15 @@ namespace WindowsFormsApp3
                     adet = 1; // Eğer metin sayıya dönüştürülemezse veya 1'den küçükse, varsayılan olarak adet 1 olarak ayarlanır.
                 }
 
-                customButton.Adet = adet;
+               
                 if (customButton.Selected == true)
                 {
+                    customButton.Adet = adet;
                     AddInfoToRightPanel(customButton.FoodName, customButton.Adet= adet, false, customButton.HalfPrice, customButton.FullPrice);
+                    customButton.BackColor = Color.Wheat;
+                    customButton.Selected = false;
                 }
-                customButton.Selected = false;
-                customButton.BackColor = Color.White;
+
             }
         }
 
@@ -354,7 +381,7 @@ namespace WindowsFormsApp3
             billListBox.Anchor = AnchorStyles.Bottom;
             billListBox.Width = rightFlowLayout.Width;
             billListBox.Height = rightFlowLayout.Height;
-            billListBox.Font = new Font("Arial", 12, FontStyle.Bold);
+            billListBox.Font = new Font("Arial", 10, FontStyle.Bold);
 
             billListBox.DrawMode = DrawMode.OwnerDrawFixed;
             billListBox.DrawItem += BillListBox_DrawItem;
@@ -379,9 +406,24 @@ namespace WindowsFormsApp3
                     bool isFull = item.IsFull;
                     float price = isFull ? item.FullPrice : item.HalfPrice;
 
-                    string info = $"{foodName,10} Adet - {adet,10} Tam - {isFull,10} Fiyat - {price:C}";
+                    // isFull değerine göre yazdırılacak metni belirleyin
+                    string fullness = isFull ? "Tam" : "Az";
 
-                    e.Graphics.DrawString(info, e.Font, new SolidBrush(e.ForeColor), e.Bounds);
+                    string info = $"{foodName,-20} Adet - {adet,5} {fullness,5} - Fiyat - {price:C}";
+
+                    // Metnin yüksekliğini hesaplayın
+                    Size textSize = TextRenderer.MeasureText(info, e.Font);
+
+                    // Yatay kaydırmayı hesaplayın
+                    int padding = 3;
+                    int x = e.Bounds.Left + padding;
+                    int y = e.Bounds.Top + padding;
+
+                    // Metni çizin
+                    e.Graphics.DrawString(info, e.Font, new SolidBrush(e.ForeColor), x, y);
+
+                    // Bir sonraki öğenin yüksekliğini ekleyin
+                    billListBox.ItemHeight = textSize.Height + padding * 2;
                 }
             }
         }
@@ -389,7 +431,11 @@ namespace WindowsFormsApp3
 
 
 
-        public void AddInfoToRightPanel(string foodName, int adet, bool isFull,float hprice ,float fprice)
+
+
+
+
+        private void AddInfoToRightPanel(string foodName, int adet, bool isFull,float hprice ,float fprice)
         {
             //string info = $"{foodName}: Adet - {adet},Tam - {isFull}, Fiyat - {fprice:C}";
             billListBox.Items.Add(new CustomListBoxItem(foodName, adet, isFull,hprice ,fprice));
@@ -421,29 +467,8 @@ namespace WindowsFormsApp3
 
             return totalAmount;
         }
-        private void InfoListBox_DoubleClick(object sender, EventArgs e)
-        {
-            // Seçili öğeyi al
-            CustomListBoxItem selectedItem = billListBox.SelectedItem as CustomListBoxItem;
 
-            // Seçili öğe varsa adetini arttır
-            if (selectedItem != null)
-            {
-                selectedItem.Adet++;
-                UpdateListBoxItem(selectedItem);
-            }
-        }
-        private void UpdateListBoxItem(CustomListBoxItem item)
-        {
-            int selectedIndex = billListBox.SelectedIndex;
 
-            // Seçili öğeyi kaldır
-            billListBox.Items.RemoveAt(selectedIndex);
-
-            // Güncellenmiş öğeyi ekleyin
-            billListBox.Items.Insert(selectedIndex, item);
-            UpdateTotalAmount();
-        }
         public class CustomListBoxItem
         {
             public string FoodName { get; set; }
@@ -478,19 +503,20 @@ namespace WindowsFormsApp3
                     a = "Az";
                     b= HalfPrice;
                 }
-                return $"{FoodName}: - Adet:{Adet} - {a} - {b:C}  ";
+                return $"{FoodName}:   Adet:{Adet}   {a}   {b:C}  ";
             }
         }
-        private void CreateCustomButton()
+        private  void CreateCustomButton()
         {
             foreach (var button in allButtons)
-            {
-                button.Text = button.FoodName;
-                button.Font = new Font("Arial", 10, FontStyle.Bold);
-                leftFlowLayout.Controls.Add(button);
+            {  
+               button.Text = button.FoodName;
+               button.Font = new Font("Arial", 10, FontStyle.Bold);
+               leftFlowLayout.Controls.Add(button);
+                
             }
-
         }
+
         private void FetchDataFromDatabase()
         {
             
@@ -558,6 +584,8 @@ namespace WindowsFormsApp3
 
             return categoriesWithAll;
         }
+        
+
         private void CreateCategoriesButtons()
         {
             foreach (string category in GetCategorysArray())
@@ -568,15 +596,16 @@ namespace WindowsFormsApp3
                 categoryButton.Font = new Font("Arial", 10, FontStyle.Bold);
                 categoryButton.Click += CategoryButton_Click;
                 rightFlowLayout.Controls.Add(categoryButton);
+
+                // Oluşturulan butonları koleksiyona ekleyin
+                categoryButtons.Add(categoryButton);
             }
             CreateRightListBox();
-
         }
 
 
         private void CategoryButton_Click(object sender, EventArgs e)
         {
-            // Kategori butonuna tıklandığında çalışacak kodu buraya ekleyin
             Button clickedButton = sender as Button;
             if (clickedButton != null)
             {
@@ -584,11 +613,20 @@ namespace WindowsFormsApp3
                 buttonsLabel.Text = categoryName;
                 ShowHideButtons(categoryName);
                 clickedButton.BackColor = Color.White;
-                
 
+                // Diğer butonların arka plan rengini Color.Wheat olarak ayarlayın
+                foreach (Button button in categoryButtons)
+                {
+                    if (button != clickedButton)
+                    {
+                        button.BackColor = Color.Wheat;
+                    }
+                }
             }
         }
 
+
+     
         private void ShowHideButtons(string desiredCategory)
         {
             foreach (CustomButton button in allButtons)
@@ -613,5 +651,16 @@ namespace WindowsFormsApp3
 
             }
         }
+        private void RefreshMainForm()
+        {
+            // Yeni bir ana form oluştur ve göster
+            NewMain newForm = new NewMain();
+            newForm.Show();
+
+            // Mevcut formu kapat
+
+        }
+
     }
+
 }

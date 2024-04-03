@@ -17,6 +17,7 @@ namespace WindowsFormsApp3
         String bilgisayarAdi = Environment.MachineName;
         String sqlBaglantisi;
         
+
         public Form2()
         {
             
@@ -83,7 +84,9 @@ namespace WindowsFormsApp3
                 
                 cmd.ExecuteNonQuery();
                 con.Close();
+
                 MessageBox.Show("Successfully Saved!");
+
             }
             catch (Exception err)
             {
