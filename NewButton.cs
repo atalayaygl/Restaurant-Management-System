@@ -10,8 +10,6 @@ using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System;
-using System.IO;
 using OfficeOpenXml;
 
 namespace WindowsFormsApp3
@@ -394,10 +392,12 @@ namespace WindowsFormsApp3
         private void CashButton_Clicked(object sender, EventArgs e)
         {
             LogPayment(totalAmountTextBox.Text, "Nakit");
+            billListBox.Items.Clear();
         }
         private void CreditButton_Clicked(object sender, EventArgs e)
         {
             LogPayment(totalAmountTextBox.Text, "Kart");
+            billListBox.Items.Clear();
         }
 
 
