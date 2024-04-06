@@ -105,6 +105,7 @@ namespace WindowsFormsApp3
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
+            listBox1.TopIndex = listBox1.Items.Count - 1;
             if (listBox1.SelectedItem != null)
             {
                 string veri = listBox1.SelectedItem.ToString();

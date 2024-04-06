@@ -151,9 +151,10 @@
             this.listBox1.CausesValidation = false;
             this.listBox1.ColumnWidth = 20;
             this.listBox1.FormattingEnabled = true;
+            this.listBox1.HorizontalExtent = 1;
+            this.listBox1.HorizontalScrollbar = true;
             this.listBox1.ItemHeight = 16;
             this.listBox1.Location = new System.Drawing.Point(333, 40);
-            this.listBox1.MultiColumn = true;
             this.listBox1.Name = "listBox1";
             this.listBox1.ScrollAlwaysVisible = true;
             this.listBox1.Size = new System.Drawing.Size(495, 244);
