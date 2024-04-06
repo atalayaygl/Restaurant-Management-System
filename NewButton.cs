@@ -696,6 +696,8 @@ namespace WindowsFormsApp3
             NewMain newForm = new NewMain();
             newForm.Show();
 
+            this.Hide();
+
             // Mevcut formu kapat
 
         }
